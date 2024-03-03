@@ -12,7 +12,7 @@ class DayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0.0,
-      color: Colors.grey[100],
+      color: Theme.of(context).hoverColor,
       margin: const EdgeInsets.only(bottom: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       child: Padding(
@@ -33,14 +33,14 @@ class DayCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.baseline,
               children: [
                 Text(
-                  '${condition.temp.round().toString()}°C',
+                  '${condition.tempmax?.round().toString()}°C',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(width: 8.0),
                 Opacity(
                   opacity: 0.6,
                   child: Text(
-                    '${condition.temp.round().toString()}°C',
+                    '${condition.tempmin?.round().toString()}°C',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),

@@ -14,7 +14,7 @@ class HourCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0.0,
-      color: Colors.grey[100],
+      color: Theme.of(context).hoverColor,
       margin: const EdgeInsets.only(right: 12.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       child: Padding(

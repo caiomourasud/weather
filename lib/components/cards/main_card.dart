@@ -19,7 +19,9 @@ class MainCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 3.0,
       shadowColor: Colors.black45,
-      color: WeatherColors.orange,
+      color: Theme.of(context).brightness == Brightness.light
+          ? WeatherColors.orange
+          : Theme.of(context).hoverColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22.0)),
       child: Stack(
         children: [
@@ -30,12 +32,17 @@ class MainCard extends StatelessWidget {
               height: 140,
               width: 140,
               decoration: BoxDecoration(
-                  color: WeatherColors.darkOrange,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? WeatherColors.darkOrange
+                      : Colors.yellow,
                   borderRadius: BorderRadius.circular(120),
                   border: Border.all(
                       strokeAlign: BorderSide.strokeAlignOutside,
                       width: 10,
-                      color: WeatherColors.darkOrange.withOpacity(0.4))),
+                      color: (Theme.of(context).brightness == Brightness.light
+                              ? WeatherColors.darkOrange
+                              : Colors.yellow)
+                          .withOpacity(0.4))),
             ),
           ),
           Padding(
