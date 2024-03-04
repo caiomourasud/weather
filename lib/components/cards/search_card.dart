@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart';
 import 'package:weather/models/waether.dart';
 import 'package:weather/service/weather_service.dart';
 
-class SearchCard extends StatelessWidget {
+class SearchCard extends StatefulWidget {
   const SearchCard({
     required this.weather,
     this.onTap,
@@ -16,10 +18,37 @@ class SearchCard extends StatelessWidget {
   final Function()? onTap;
   final Function()? onDelete;
 
+  @override
+  State<SearchCard> createState() => _SearchCardState();
+}
+
+class _SearchCardState extends State<SearchCard> {
+  DateTime now = DateTime.now();
+  late Timer _timer;
+
+  @override
+  void initState() {
+    _timer =
+        Timer.periodic(const Duration(seconds: 1), (timer) => _updateTime());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _updateTime() {
+    setState(() {
+      now = DateTime.now();
+    });
+  }
+
   String get getTimeInTimezone {
-    final nowUtc = DateTime.now().toUtc();
+    final nowUtc = now.toUtc();
     final nowInTimezone =
-        TZDateTime.from(nowUtc, getLocation(weather.timezone));
+        TZDateTime.from(nowUtc, getLocation(widget.weather.timezone));
     final formattedTime = DateFormat('HH:mm').format(nowInTimezone);
     return formattedTime;
   }
@@ -35,8 +64,8 @@ class SearchCard extends StatelessWidget {
       child: ListTile(
         dense: true,
         contentPadding: EdgeInsets.zero,
-        onTap: onTap,
-        onLongPress: onDelete,
+        onTap: widget.onTap,
+        onLongPress: widget.onDelete,
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
@@ -70,7 +99,7 @@ class SearchCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4.0),
                         Text(
-                          weather.address,
+                          widget.weather.address,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -81,7 +110,7 @@ class SearchCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    '${weather.currentConditions.temp.round()}°C',
+                    '${widget.weather.currentConditions.temp.round()}°C',
                     style: Theme.of(context).textTheme.displaySmall,
                   ),
                   const SizedBox(width: 16.0),
@@ -96,13 +125,13 @@ class SearchCard extends StatelessWidget {
                           children: [
                             Icon(
                               WeatherService.getConditionIcon(
-                                weather.days[0].icon,
+                                widget.weather.days[0].icon,
                               ),
                               size: 16,
                             ),
                             const SizedBox(width: 4.0),
                             Text(
-                              weather.days[0].conditions,
+                              widget.weather.days[0].conditions,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
