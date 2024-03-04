@@ -19,6 +19,7 @@ class MainCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 3.0,
       shadowColor: Colors.black45,
+      surfaceTintColor: Theme.of(context).colorScheme.background,
       color: Theme.of(context).brightness == Brightness.light
           ? WeatherColors.orange
           : Theme.of(context).hoverColor,
