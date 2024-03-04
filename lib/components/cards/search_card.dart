@@ -7,11 +7,13 @@ class SearchCard extends StatelessWidget {
   const SearchCard({
     required this.weather,
     this.onTap,
+    this.onDelete,
     super.key,
   });
 
   final Weather weather;
   final Function()? onTap;
+  final Function()? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class SearchCard extends StatelessWidget {
         dense: true,
         contentPadding: EdgeInsets.zero,
         onTap: onTap,
+        onLongPress: onDelete,
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(

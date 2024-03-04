@@ -22,7 +22,6 @@ class _HomePageState extends State<HomePage> {
   Weather? weather;
   Weather? currentLocation;
   bool isLoading = false;
-  List<CurrentConditions> hourList = [];
 
   @override
   void initState() {
@@ -30,9 +29,15 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  Future<void> getWeather() async {
+  Future<void> getWeather({Weather? w}) async {
     Weather? localLocation;
     setState(() => isLoading = true);
+    if (w != null) {
+      localLocation = await Api.fetchWeather(w.address);
+      weather = localLocation;
+      setState(() => isLoading = false);
+      return;
+    }
     localLocation = await StorageService.getCurrentLocation();
     weather = localLocation;
     setState(() {});
@@ -48,8 +53,7 @@ class _HomePageState extends State<HomePage> {
 
     weather = localLocation;
     currentLocation ??= weather?.copyWith(address: 'Current Location');
-    hourList = localLocation.days;
-    if (hourList.isNotEmpty) hourList.removeAt(0);
+
     setState(() => isLoading = false);
   }
 
@@ -63,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.background,
         leading: IconButton(
           onPressed: () async {
-            final test = await Navigator.push(
+            final response = await Navigator.push(
               context,
               CupertinoPageRoute<Weather>(
                 builder: (context) {
@@ -71,14 +75,16 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             );
-            if (test != null) {
-              weather = test;
+            if (response != null) {
+              weather = response;
               title = weather?.address;
+              setState(() {});
             }
-
-            setState(() {});
           },
-          icon: const Icon(Icons.add),
+          icon: Icon(
+            CupertinoIcons.add,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
         ),
         title: Center(
             child: Text(
@@ -214,46 +220,50 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 8.0),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Skeletonizer(
-                  enabled: isLoading,
-                  child: Column(
-                    children: (isLoading
-                            ? List.generate(
-                                5,
-                                (index) => CurrentConditions(
-                                      datetime: '0000-00-00 00:00:00',
-                                      datetimeEpoch: 0,
-                                      temp: 10.0,
-                                      feelslike: 0.0,
-                                      humidity: 0.0,
-                                      dew: 0.0,
-                                      precip: 0.0,
-                                      precipprob: 0.0,
-                                      snow: 0.0,
-                                      snowdepth: 0.0,
-                                      windgust: 0.0,
-                                      preciptype: [],
-                                      windspeed: 0.0,
-                                      winddir: 0.0,
-                                      pressure: 0.0,
-                                      visibility: 0.0,
-                                      cloudcover: 0.0,
-                                      solarradiation: 0.0,
-                                      solarenergy: 0.0,
-                                      uvindex: 0.0,
-                                      conditions: '',
-                                      icon: '',
-                                      stations: [],
-                                      source: '',
-                                    ))
-                            : hourList)
-                        .take(7)
-                        .map((e) => DayCard(
-                              condition: e,
-                            ))
-                        .toList(),
-                  ),
-                ),
+                child: Builder(builder: (_) {
+                  List<CurrentConditions> days = weather?.days ?? [];
+                  // if (days.isNotEmpty) days.removeAt(0);
+                  return Skeletonizer(
+                    enabled: isLoading,
+                    child: Column(
+                      children: (isLoading
+                              ? List.generate(
+                                  5,
+                                  (index) => CurrentConditions(
+                                        datetime: '0000-00-00 00:00:00',
+                                        datetimeEpoch: 0,
+                                        temp: 10.0,
+                                        feelslike: 0.0,
+                                        humidity: 0.0,
+                                        dew: 0.0,
+                                        precip: 0.0,
+                                        precipprob: 0.0,
+                                        snow: 0.0,
+                                        snowdepth: 0.0,
+                                        windgust: 0.0,
+                                        preciptype: [],
+                                        windspeed: 0.0,
+                                        winddir: 0.0,
+                                        pressure: 0.0,
+                                        visibility: 0.0,
+                                        cloudcover: 0.0,
+                                        solarradiation: 0.0,
+                                        solarenergy: 0.0,
+                                        uvindex: 0.0,
+                                        conditions: '',
+                                        icon: '',
+                                        stations: [],
+                                        source: '',
+                                      ))
+                              : days)
+                          .take(7)
+                          .map((e) => DayCard(
+                                condition: e,
+                              ))
+                          .toList(),
+                    ),
+                  );
+                }),
               ),
               SizedBox(
                   height: 16.0 + MediaQuery.of(context).viewPadding.bottom),

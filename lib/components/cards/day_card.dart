@@ -10,6 +10,7 @@ class DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.parse(condition.datetime).day == DateTime.now().day;
     return Card(
       elevation: 0.0,
       color: Theme.of(context).hoverColor,
@@ -22,9 +23,11 @@ class DayCard extends StatelessWidget {
             Icon(WeatherService.getConditionIcon(condition.icon)),
             const SizedBox(width: 32.0),
             Text(
-              DateFormat('EEEE d, MMMM').format(DateTime.parse(
-                condition.datetime,
-              )),
+              '${today ? 'Today' : ''}${DateFormat('${today ? '' : 'EEEE'} d, MMMM').format(
+                DateTime.parse(
+                  condition.datetime,
+                ),
+              )}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const Spacer(),

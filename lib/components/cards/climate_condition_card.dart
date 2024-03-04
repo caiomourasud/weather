@@ -53,7 +53,9 @@ class ClimateConditionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(right: 8.0),
-      color: Colors.white.withOpacity(0.25),
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.white.withOpacity(0.25)
+          : Theme.of(context).hoverColor,
       elevation: 0.0,
       child: Padding(
         padding: const EdgeInsets.symmetric(
