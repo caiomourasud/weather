@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:weather/pages/home_page.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() {
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 

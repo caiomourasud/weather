@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart';
 import 'package:weather/models/waether.dart';
 import 'package:weather/service/weather_service.dart';
 
@@ -14,6 +15,14 @@ class SearchCard extends StatelessWidget {
   final Weather weather;
   final Function()? onTap;
   final Function()? onDelete;
+
+  String get getTimeInTimezone {
+    final nowUtc = DateTime.now().toUtc();
+    final nowInTimezone =
+        TZDateTime.from(nowUtc, getLocation(weather.timezone));
+    final formattedTime = DateFormat('HH:mm').format(nowInTimezone);
+    return formattedTime;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +113,7 @@ class SearchCard extends StatelessWidget {
                             const Icon(Icons.access_time, size: 16),
                             const SizedBox(width: 4.0),
                             Text(
-                              DateFormat('HH:mm').format(DateTime.now()),
+                              getTimeInTimezone,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
