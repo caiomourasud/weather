@@ -21,7 +21,7 @@ class HoursRow extends StatelessWidget {
         final hourTime = DateTime.parse(
           '${DateFormat('yyyy-MM-dd').format(DateTime.now())} ${hour.datetime}',
         );
-        if (now.isBefore(hourTime) || isLoading) {
+        if (now.millisecond > hourTime.millisecond || isLoading) {
           return HourCard(condition: hour);
         }
         return const SizedBox();

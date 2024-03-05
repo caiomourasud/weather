@@ -26,10 +26,14 @@ class _SearchCardState extends State<SearchCard> {
   DateTime now = DateTime.now();
   late Timer _timer;
 
+  String location = '';
+
   @override
   void initState() {
     _timer =
         Timer.periodic(const Duration(seconds: 1), (timer) => _updateTime());
+
+    setLocation();
     super.initState();
   }
 
@@ -43,6 +47,15 @@ class _SearchCardState extends State<SearchCard> {
     setState(() {
       now = DateTime.now();
     });
+  }
+
+  void setLocation() {
+    final resolvedAddress = widget.weather.resolvedAddress.split(', ');
+    final temp = List<String>.from(resolvedAddress);
+    if (temp.length > 2) temp.removeLast();
+    location = widget.weather.address == 'Current Location'
+        ? 'Current Location'
+        : temp.join(', ');
   }
 
   String get getTimeInTimezone {
@@ -99,7 +112,7 @@ class _SearchCardState extends State<SearchCard> {
                         ),
                         const SizedBox(width: 4.0),
                         Text(
-                          widget.weather.address,
+                          location,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],

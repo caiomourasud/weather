@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:weather/api/api.dart';
 import 'package:weather/components/cards/search_card.dart';
+import 'package:weather/models/city.dart';
 import 'package:weather/models/waether.dart';
+import 'package:weather/service/city_service.dart';
 import 'package:weather/service/storage_service.dart';
+import 'package:weather/service/string_service.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({
@@ -19,12 +24,17 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  var _searchController = TextEditingController();
   bool isLoading = false;
+
+  List<City> cities = [];
+  List<City> filteredCities = [];
+
   List<Weather> savedLocations = [];
-  final _searchController = TextEditingController();
 
   @override
   void initState() {
+    getCities();
     loadData();
     super.initState();
   }
@@ -39,9 +49,12 @@ class _SearchPageState extends State<SearchPage> {
     setState(() => isLoading = true);
     final location = await Api.fetchWeather(place);
     if (!savedLocations.any((e) {
-      return e.address == place;
+      return StringService.replaceSpecialCharacters(e.address) ==
+          StringService.replaceSpecialCharacters(place);
     })) {
-      savedLocations.add(location);
+      if (location != null) {
+        savedLocations.add(location);
+      }
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -62,13 +75,18 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> getWeather() async {
     savedLocations = await StorageService.getSavedLocations();
-    final locations = List.from(savedLocations);
+    final locations = List<Weather>.from(savedLocations);
     List<Weather> tempLocations = [];
     for (final location in locations) {
-      tempLocations.add(await Api.fetchWeather(location.address));
+      final w = await Api.fetchWeather(location.address);
+      if (w != null) tempLocations.add(w);
       await StorageService.setSavedLocations(tempLocations);
     }
     if (mounted) setState(() {});
+  }
+
+  Future<void> getCities() async {
+    cities = await Api.fetchCities();
   }
 
   @override
@@ -84,7 +102,10 @@ class _SearchPageState extends State<SearchPage> {
             onPressed: () {
               Navigator.pop(context, null);
             },
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(
+              CupertinoIcons.chevron_back,
+              color: Theme.of(context).hintColor,
+            ),
           ),
           title: Center(
             child: Text(
@@ -117,37 +138,91 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(height: 8.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SizedBox(
+              child: LayoutBuilder(builder: (context, constraints) {
+                return SizedBox(
                   height: 48.0,
-                  child: CupertinoSearchTextField(
-                    enabled: !isLoading,
-                    controller: _searchController,
-                    placeholder: 'Enter place',
-                    onSubmitted: (value) async {
-                      await addPlace(value);
+                  child: RawAutocomplete<City>(
+                    displayStringForOption: (city) => city.name ?? '',
+                    optionsBuilder: (textEditingValue) {
+                      if (textEditingValue.text == '') {
+                        return const Iterable<City>.empty();
+                      }
+                      return CityService.filterCities(
+                          textEditingValue.text, cities);
+                    },
+                    fieldViewBuilder: (
+                      context,
+                      textEditingController,
+                      focusNode,
+                      onFieldSubmitted,
+                    ) {
+                      _searchController = textEditingController;
+                      return TextField(
+                        enabled: !isLoading,
+                        controller: _searchController,
+                        focusNode: focusNode,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.zero,
+                          filled: true,
+                          fillColor: Theme.of(context).hoverColor,
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Theme.of(context).hintColor,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintText: 'Enter place',
+                        ),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      );
+                    },
+                    onSelected: (value) async {
+                      await addPlace(value.name ?? '');
                       _searchController.clear();
+                      filteredCities.clear();
                     },
-                    onChanged: (value) {
-                      // if (debounceTimer?.isActive ?? false) {
-                      //   debounceTimer?.cancel();
-                      // }
-                      // debounceTimer =
-                      //     Timer(const Duration(milliseconds: 400), () {
-                      //   setState(() {
-                      //     searchText = value;
-                      //   });
-                      // });
-                    },
-                    prefixIcon: const Icon(
-                      CupertinoIcons.search,
-                      color: Colors.grey,
+                    optionsViewBuilder: (context, onSelected, options) => Align(
+                      alignment: Alignment.topLeft,
+                      child: Material(
+                        color: Colors.transparent,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(4.0)),
+                        ),
+                        child: Container(
+                          constraints: const BoxConstraints(maxHeight: 200),
+                          height: (51.0 * options.length) - options.length,
+                          width: constraints.biggest.width,
+                          child: Card(
+                              surfaceTintColor: Theme.of(context).hintColor,
+                              margin: const EdgeInsets.only(top: 4.0),
+                              elevation: 4.0,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: options
+                                      .map(
+                                        (e) => ListTile(
+                                          dense: true,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0)),
+                                          onTap: () {
+                                            onSelected(e);
+                                          },
+                                          title: Text(e.name ?? ''),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              )),
+                        ),
+                      ),
                     ),
-                    backgroundColor: Theme.of(context).hoverColor,
-                    prefixInsets: const EdgeInsets.only(left: 15.0),
-                    borderRadius: BorderRadius.circular(16.0),
-                    suffixInsets: const EdgeInsets.only(right: 15.0),
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  )),
+                  ),
+                );
+              }),
             ),
             const SizedBox(height: 16.0),
             Expanded(
