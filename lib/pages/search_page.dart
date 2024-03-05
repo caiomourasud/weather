@@ -47,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> addPlace(String place) async {
     setState(() => isLoading = true);
-    final location = await Api.fetchWeather(place);
+    final location = await Api.fetchWeather(context, place);
     if (!savedLocations.any((e) {
       return StringService.replaceSpecialCharacters(e.address) ==
           StringService.replaceSpecialCharacters(place);
@@ -78,9 +78,11 @@ class _SearchPageState extends State<SearchPage> {
     final locations = List<Weather>.from(savedLocations);
     List<Weather> tempLocations = [];
     for (final location in locations) {
-      final w = await Api.fetchWeather(location.address);
-      if (w != null) tempLocations.add(w);
-      await StorageService.setSavedLocations(tempLocations);
+      if (mounted) {
+        final w = await Api.fetchWeather(context, location.address);
+        if (w != null) tempLocations.add(w);
+        await StorageService.setSavedLocations(tempLocations);
+      }
     }
     if (mounted) setState(() {});
   }

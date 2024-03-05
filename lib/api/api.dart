@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 
 class Api {
-  static Future<Weather?> fetchWeather(String city) async {
+  static Future<Weather?> fetchWeather(
+      BuildContext context, String city) async {
     final url = Uri.https(
       'weather.visualcrossing.com',
       '/VisualCrossingWebServices/rest/services/timeline/$city',
@@ -24,6 +25,12 @@ class Api {
       return Weather.fromJson(jsonResponse);
     } catch (err) {
       debugPrint(err.toString());
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Local temporarily unavailable'),
+        ));
+      }
       return null;
     }
   }

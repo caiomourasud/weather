@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     Weather? localLocation;
     setState(() => isLoading = true);
     if (w != null) {
-      localLocation = await Api.fetchWeather(w.address);
+      localLocation = await Api.fetchWeather(context, w.address);
       weather = localLocation;
       setState(() => isLoading = false);
       return;
@@ -43,13 +43,14 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
     final location = await GeolocationService.getCity();
 
-    if (location != null && location.isNotEmpty) {
-      currentLocation = await Api.fetchWeather(location);
+    if (location != null && location.isNotEmpty && mounted) {
+      currentLocation = await Api.fetchWeather(context, location);
       currentLocation = currentLocation?.copyWith(address: 'Current Location');
     }
-
-    localLocation ??= await Api.fetchWeather(
-        location?.isEmpty == true ? 'Curitiba' : location!);
+    if (mounted) {
+      localLocation ??= await Api.fetchWeather(
+          context, location?.isEmpty == true ? 'Curitiba' : location!);
+    }
 
     weather = localLocation;
     currentLocation ??= weather?.copyWith(address: 'Current Location');
