@@ -95,7 +95,8 @@ class _SearchCardState extends State<SearchCard> {
                   const Spacer(),
                   Chip(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40)),
+                      borderRadius: BorderRadius.circular(40),
+                    ),
                     surfaceTintColor: Colors.white.withOpacity(0.1),
                     backgroundColor: Colors.white.withOpacity(0.1),
                     side: const BorderSide(
@@ -106,10 +107,7 @@ class _SearchCardState extends State<SearchCard> {
                     labelPadding: const EdgeInsets.only(left: 6.0, right: 8.0),
                     label: Row(
                       children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 16,
-                        ),
+                        const Icon(Icons.location_on_outlined, size: 16),
                         const SizedBox(width: 4.0),
                         Text(
                           location,

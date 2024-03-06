@@ -63,4 +63,32 @@ class StorageService {
       return [];
     }
   }
+
+  static const String _updatekey = 'updatedKey';
+
+  static Future<void> setUpdateTime(DateTime dateTime) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString(_updatekey, dateTime.toIso8601String());
+    } catch (e) {
+      debugPrint('Something went wrong trying to save update time => $e');
+    }
+  }
+
+  static Future<DateTime?> getUpdateTime() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey(_updatekey)) {
+        final updateTimeString = prefs.getString(_updatekey);
+        if (updateTimeString == null) return null;
+        final updateTime = DateTime.tryParse(updateTimeString);
+        return updateTime;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Something went wrong trying to load update time => $e');
+      return null;
+    }
+  }
 }

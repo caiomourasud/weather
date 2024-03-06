@@ -26,10 +26,12 @@ class Api {
     } catch (err) {
       debugPrint(err.toString());
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text('Local temporarily unavailable'),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Local temporarily unavailable'),
+          ),
+        );
       }
       return null;
     }

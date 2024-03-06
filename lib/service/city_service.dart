@@ -7,7 +7,7 @@ class CityService {
     return text.isEmpty
         ? const []
         : cities
-            .where((city) => (StringService.replaceSpecialCharacters(city.name))
+            .where((city) => StringService.replaceSpecialCharacters(city.name)
                 .toLowerCase()
                 .contains(
                   StringService.replaceSpecialCharacters(text).toLowerCase(),

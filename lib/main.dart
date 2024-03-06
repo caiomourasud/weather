@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       theme: ThemeData(
-        colorScheme:
-            Theme.of(context).colorScheme.copyWith(background: Colors.white),
-        useMaterial3: true,
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+              background: Colors.white,
+            ),
       ),
       home: const HomePage(),
     );

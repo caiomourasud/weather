@@ -74,17 +74,33 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> getWeather() async {
+    setState(() => isLoading = true);
     savedLocations = await StorageService.getSavedLocations();
     final locations = List<Weather>.from(savedLocations);
     List<Weather> tempLocations = [];
+    final updateTime = await StorageService.getUpdateTime();
+
+    bool hasMoreThan30Minutes =
+        (updateTime ?? (DateTime.now().subtract(const Duration(minutes: 6))))
+                .difference(DateTime.now())
+                .inSeconds
+                .abs() >
+            300;
+    if (!hasMoreThan30Minutes) {
+      tempLocations = locations;
+      if (mounted) setState(() => isLoading = false);
+      return;
+    }
+
     for (final location in locations) {
       if (mounted) {
         final w = await Api.fetchWeather(context, location.address);
         if (w != null) tempLocations.add(w);
-        await StorageService.setSavedLocations(tempLocations);
+        StorageService.setSavedLocations(tempLocations);
       }
     }
-    if (mounted) setState(() {});
+    await StorageService.setUpdateTime(DateTime.now());
+    if (mounted) setState(() => isLoading = false);
   }
 
   Future<void> getCities() async {
@@ -101,9 +117,11 @@ class _SearchPageState extends State<SearchPage> {
           surfaceTintColor: Theme.of(context).colorScheme.background,
           backgroundColor: Theme.of(context).colorScheme.background,
           leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context, null);
-            },
+            onPressed: isLoading
+                ? null
+                : () {
+                    Navigator.pop(context, null);
+                  },
             icon: Icon(
               CupertinoIcons.chevron_back,
               color: Theme.of(context).hintColor,

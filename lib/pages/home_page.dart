@@ -39,8 +39,8 @@ class _HomePageState extends State<HomePage> {
       return;
     }
     localLocation = await StorageService.getCurrentLocation();
-    weather = localLocation;
-    setState(() {});
+    setState(() => weather = localLocation);
+
     final location = await GeolocationService.getCity();
 
     if (location != null && location.isNotEmpty && mounted) {
@@ -223,7 +223,6 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Builder(builder: (_) {
                   List<CurrentConditions> days = weather?.days ?? [];
-                  // if (days.isNotEmpty) days.removeAt(0);
                   return Skeletonizer(
                     enabled: isLoading,
                     child: Column(

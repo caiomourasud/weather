@@ -66,15 +66,9 @@ class ClimateConditionCard extends StatelessWidget {
           opacity: 0.6,
           child: Row(
             children: [
-              Icon(
-                getIcon,
-                size: 16,
-              ),
+              Icon(getIcon, size: 16),
               const SizedBox(width: 4.0),
-              Text(
-                getValue,
-                style: Theme.of(context).textTheme.bodySmall,
-              )
+              Text(getValue, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ),
