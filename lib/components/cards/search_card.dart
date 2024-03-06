@@ -10,13 +10,11 @@ class SearchCard extends StatefulWidget {
   const SearchCard({
     required this.weather,
     this.onTap,
-    this.onDelete,
     super.key,
   });
 
   final Weather weather;
   final Function()? onTap;
-  final Function()? onDelete;
 
   @override
   State<SearchCard> createState() => _SearchCardState();
@@ -71,14 +69,14 @@ class _SearchCardState extends State<SearchCard> {
     return Card(
       clipBehavior: Clip.hardEdge,
       elevation: 0.0,
-      color: Theme.of(context).hoverColor,
-      margin: const EdgeInsets.only(bottom: 8.0),
+      color: Theme.of(context).colorScheme.background,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       child: ListTile(
         dense: true,
         contentPadding: EdgeInsets.zero,
         onTap: widget.onTap,
-        onLongPress: widget.onDelete,
+        tileColor: Theme.of(context).hoverColor,
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(

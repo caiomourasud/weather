@@ -134,18 +134,20 @@ class _HomePageState extends State<HomePage> {
                       'Weather for today',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Opacity(
-                          opacity: 0.6,
-                          child: Row(
-                            children: [
-                              SizedBox(width: 8.0),
-                              Text('Details'),
-                              Icon(Icons.chevron_right_rounded)
-                            ],
-                          ),
-                        ))
+                    // TODO: Next step
+                    // IconButton(
+                    //   onPressed: () {},
+                    //   icon: const Opacity(
+                    //     opacity: 0.6,
+                    //     child: Row(
+                    //       children: [
+                    //         SizedBox(width: 8.0),
+                    //         Text('Details'),
+                    //         Icon(Icons.chevron_right_rounded)
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -203,18 +205,20 @@ class _HomePageState extends State<HomePage> {
                       'Forecast fot 7 days',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Opacity(
-                          opacity: 0.6,
-                          child: Row(
-                            children: [
-                              SizedBox(width: 8.0),
-                              Text('Details'),
-                              Icon(Icons.chevron_right_rounded)
-                            ],
-                          ),
-                        ))
+                    // TODO: Next step
+                    // IconButton(
+                    //   onPressed: () {},
+                    //   icon: const Opacity(
+                    //     opacity: 0.6,
+                    //     child: Row(
+                    //       children: [
+                    //         SizedBox(width: 8.0),
+                    //         Text('Details'),
+                    //         Icon(Icons.chevron_right_rounded)
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

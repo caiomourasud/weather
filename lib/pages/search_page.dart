@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:weather/api/api.dart';
 import 'package:weather/components/cards/search_card.dart';
+import 'package:weather/components/slidable_item.dart';
 import 'package:weather/models/city.dart';
 import 'package:weather/models/waether.dart';
 import 'package:weather/service/city_service.dart';
@@ -253,29 +255,43 @@ class _SearchPageState extends State<SearchPage> {
                     return Column(
                       children: [
                         if (weather != null)
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                          Container(
+                            margin: const EdgeInsets.only(
+                              left: 16.0,
+                              right: 16.0,
+                              bottom: 8.0,
+                            ),
                             child: SearchCard(
                                 weather: weather,
-                                onDelete: () => removeWeather(weather),
                                 onTap: () {
                                   Navigator.pop(context, widget.weather);
                                 }),
                           ),
                         ...savedLocations
-                            .map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: SearchCard(
-                                    weather: e,
-                                    onDelete: () => removeWeather(e),
-                                    onTap: () {
-                                      Navigator.pop(context, e);
-                                    }),
-                              ),
-                            )
+                            .map((e) => Container(
+                                margin: const EdgeInsets.only(
+                                  left: 16.0,
+                                  right: 16.0,
+                                  bottom: 8.0,
+                                ),
+                                child: SlidableItem(
+                                  enabled: !isLoading,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  endSlidableAction: SlidableAction(
+                                    onPressed: (actionContext) {
+                                      removeWeather(e);
+                                    },
+                                    autoClose: true,
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete_outline_rounded,
+                                  ),
+                                  child: SearchCard(
+                                      weather: e,
+                                      onTap: () {
+                                        Navigator.pop(context, e);
+                                      }),
+                                )))
                             .toList(),
                         SizedBox(
                             height: 16.0 +
